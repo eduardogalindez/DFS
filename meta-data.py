@@ -38,8 +38,8 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 		try:
 			List= db.GetFiles()
 			p= new Packet()
-
-
+			p.BuildListResponce(List)
+			self.request.sendall(p.getEncodedPacket())
 
 		except:
 			self.request.sendall("NAK")	
@@ -66,10 +66,10 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 
 		# Fill code to get the file name from packet and then 
 		# get the fsize and array of metadata server
-
+		fName = p.getFileName()
+		fsize, MetaList= db.getFileInode(fName)
 		if fsize:
-			# Fill code
-
+			p.BuildGetResponse(MetaList, fsize)
 			self.request.sendall(p.getEncodedPacket())
 		else:
 			self.request.sendall("NFOUND")
