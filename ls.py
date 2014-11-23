@@ -20,6 +20,26 @@ def usage():
 def client(ip, port):
 
 	# Contacts the metadata server and ask for list of files.
+	socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	socket.connect(ip, port)
+
+	# Creae a Packet and build it as a list packet
+	# then send it to the metadata server
+	packet = Packet()
+	packet.BuildListPacket()
+	socket.sendall(packet.getEncodedPacket())
+
+	# Now we take the response of the metadata server
+	# the response is a packet with the list of files
+	response = socket.recv(1024)
+	packet.DecodePacket(response)
+
+	# here I get the file array from the packet and
+	# I will iterate to display the files and their size
+	fileList = packet.getFileArray()
+	for f in fileList:
+		print f[0] + ' ' + f[1] + 'B'
+
 
 if __name__ == "__main__":
 
@@ -34,7 +54,7 @@ if __name__ == "__main__":
 		port = 8000
 	elif len(server == 2):
 		ip = server[0]
-		port = int server[1]
+		port = int(server[1])
 
 	if not ip:
 		usage()
