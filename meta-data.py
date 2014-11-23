@@ -79,9 +79,10 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 
 		# Fill code to get file name and blocks from
 		# packet
-	
+		fName = p.getFileName()
+		DBlocks= p.getDataBlocks()
 		# Fill code to add blocks to file inode
-
+		db.AddBlockToInode(fName, DBlocks)
 		
 	def handle(self):
 
@@ -110,19 +111,19 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 
 		elif cmd == "list":
 			# Client asking for a list of files
-			# Fill code
+			self.handle_list(db)
 		
 		elif cmd == "put":
 			# Client asking for servers to put data
-			# Fill code
+			self.handle_put(db, p)
 		
 		elif cmd == "get":
 			# Client asking for servers to get data
-			# Fill code
+			self.handle_get(db, p)
 
 		elif cmd == "dblks":
 			# Client sending data blocks for file
-			 # Fill code
+			 self.handle_blocks(db, p)
 
 
 		db.Close()
