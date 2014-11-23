@@ -28,7 +28,7 @@ id2 = db.AddDataNode("136.145.54.11", 80)
 print 
 print "Testing if node was inserted"
 print "A tupple with node name and connection info must appear"
-print db.CheckNode(id1)
+print db.CheckNode("136.145.54.10", 80)
 print
 
 print "Testing all Available data nodes"
