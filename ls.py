@@ -10,6 +10,7 @@
 
 
 import socket
+import sys
 
 from Packet import *
 
@@ -20,18 +21,18 @@ def usage():
 def client(ip, port):
 
 	# Contacts the metadata server and ask for list of files.
-	socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	socket.connect(ip, port)
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((ip, port))
 
 	# Creae a Packet and build it as a list packet
 	# then send it to the metadata server
 	packet = Packet()
 	packet.BuildListPacket()
-	socket.sendall(packet.getEncodedPacket())
+	s.sendall(packet.getEncodedPacket())
 
 	# Now we take the response of the metadata server
 	# the response is a packet with the list of files
-	response = socket.recv(1024)
+	response = s.recv(1024)
 	packet.DecodePacket(response)
 
 	# here I get the file array from the packet and
@@ -49,10 +50,10 @@ if __name__ == "__main__":
 	ip = None
 	port = None 
 	server = sys.argv[1].split(":")
-	if len(server == 1):
+	if len(server) == 1:
 		ip = server[0]
 		port = 8000
-	elif len(server == 2):
+	elif len(server) == 2:
 		ip = server[0]
 		port = int(server[1])
 
