@@ -37,7 +37,7 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 		"""Get the file list from the database and send list to client"""
 		try:
 			List= db.GetFiles()
-			p= new Packet()
+			p= Packet()
 			p.BuildListResponce(List)
 			self.request.sendall(p.getEncodedPacket())
 
