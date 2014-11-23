@@ -26,23 +26,32 @@ def copyToDFS(address, fname, path):
 
 	# Create a connection to the data server
 
-	# Fill code
+	socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	socket.connect(address)
 
 	# Read file
 
-	# Fill code
+	theFile = open(path, 'r')
+	data = theFile.read()
+	theFile.close()
+	dataLength = len(data)
 
 	# Create a Put packet with the fname and the length of the data,
 	# and sends it to the metadata server 
 
-	# Fill code
+	packet = Packet()
+	packet.BuildPutPacket(fname, dataLength)
+	socket.sendall(packet.getEncodedPackets())
 
 	# If no error or file exists
 	# Get the list of data nodes.
 	# Divide the file in blocks
 	# Send the blocks to the data servers
 
-	# Fill code	
+	response = socket.recv()
+
+	if response != "DUP":
+			
 
 	# Notify the metadata server where the blocks are saved.
 
