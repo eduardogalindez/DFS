@@ -39,7 +39,7 @@ def copyToDFS(address, fname, path):
 	# Create a Put packet with the fname and the length of the data,
 	# and sends it to the metadata server 
 
-	packet = Packet()
+	packet = new Packet()
 	packet.BuildPutPacket(fname, dataLength)
 	socket.sendall(packet.getEncodedPackets())
 
@@ -51,7 +51,9 @@ def copyToDFS(address, fname, path):
 	response = socket.recv()
 
 	if response != "DUP":
-			
+		packet.DecodePacket(response)
+		dataNodes = packet.getDataNodes()
+
 
 	# Notify the metadata server where the blocks are saved.
 
