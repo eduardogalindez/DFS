@@ -27,7 +27,8 @@ def register(meta_ip, meta_port, data_ip, data_port):
 
 	# Establish connection
 	
-	# Fill code	
+	socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	socket.connect(address)
 
 	try:
 		response = "NAK"
