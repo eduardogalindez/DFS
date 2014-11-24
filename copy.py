@@ -26,8 +26,8 @@ def copyToDFS(address, fname, path):
 
 	# Create a connection to the data server
 
-	socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	socket.connect(address)
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect(address)
 
 	# Read file
 
@@ -41,14 +41,14 @@ def copyToDFS(address, fname, path):
 
 	packet = new Packet()
 	packet.BuildPutPacket(fname, dataLength)
-	socket.sendall(packet.getEncodedPackets())
+	s.sendall(packet.getEncodedPackets())
 
 	# If no error or file exists
 	# Get the list of data nodes.
 	# Divide the file in blocks
 	# Send the blocks to the data servers
 
-	response = socket.recv()
+	response = s.recv()
 
 	if response != "DUP":
 		packet.DecodePacket(response)
