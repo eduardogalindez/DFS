@@ -33,17 +33,20 @@ def client(ip, port):
 	# Now we take the response of the metadata server
 	# the response is a packet with the list of files
 	response = s.recv(1024)
+
+	#print response
 	
 	if response == 'NAK':
-		print 'there was an error with the DB'
+		print 'there was an error with the request'
 	else:
 		packet.DecodePacket(response)
 
 		# here I get the file array from the packet and
 		# I will iterate to display the files and their size
 		fileList = packet.getFileArray()
+		#print fileList
 		for f in fileList:
-			print f[0] + ' ' + f[1] + 'B'
+			print f[0], f[1], "bytes"
 
 
 if __name__ == "__main__":
