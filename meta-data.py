@@ -36,10 +36,10 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 	def handle_list(self, db):
 		"""Get the file list from the database and send list to client"""
 		try:
-			List= db.GetFiles()
-			p= Packet()
-			p.BuildListResponce(List)
-			self.request.sendall(p.getEncodedPacket())
+			List = db.GetFiles()
+			packet = Packet()
+			packet.BuildListResponse(List)
+			self.request.sendall(packet.getEncodedPacket())
 
 		except:
 			self.request.sendall("NAK")	
