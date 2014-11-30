@@ -68,9 +68,11 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		# Open the file for the new data block.  
 		# Receive the data block.
 		# Send the block id back
-
-		# Fill code
-
+		NewFile = open(DATA_PATH+blockid, 'w')
+		DBlock= self.request.recv('1024')
+		self.request.sendall(blockid)
+		NewFile.write(DBlock)
+		NewFile.close
 	def handle_get(self, p):
 		
 		# Get the block id from the packet
@@ -79,8 +81,11 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 
 		# Read the file with the block id data
 		# Send it back to the copy client.
+		IDFile = open(DATA_PATH+blockid, 'r')
+		data= IDFile.read()
+		IDFile.close()
+		self.request.sendall(data)
 		
-		# Fill code
 
 	def handle(self):
 		msg = self.request.recv(1024)
