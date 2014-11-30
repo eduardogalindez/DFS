@@ -30,6 +30,8 @@ def copyToDFS(address, fname, path):
 	s.connect(address)
 
 	# Read file
+	# here I read the file and store the contents of the file in a variable named data
+	# and store the data length to in a variable called dataLength :D
 
 	theFile = open(path, 'r')
 	data = theFile.read()
@@ -41,18 +43,70 @@ def copyToDFS(address, fname, path):
 
 	packet = new Packet()
 	packet.BuildPutPacket(fname, dataLength)
-	s.sendall(packet.getEncodedPackets())
+	s.sendall(packet.getEncodedPacket())
 
 	# If no error or file exists
 	# Get the list of data nodes.
 	# Divide the file in blocks
 	# Send the blocks to the data servers
 
-	response = s.recv()
+	response = s.recv(1024)
+	s.close()
+	# lets check if the file already exists in the DB
+	if response == "DUP":
+		# if it does then let the user know
+		print "The file already exists"
+		return
 
-	if response != "DUP":
+	# if it isn't in the DB then we get our hands dirty
+	else:
+		# decode the packet and get the data nodes that the metadata server
+		# sent you, also get its size.. this will be usefull later
 		packet.DecodePacket(response)
 		dataNodes = packet.getDataNodes()
+		countDN = len(dataNodes)
+		# now we have to divide the file into blocks. To do so we need t know
+		# the block size, so that we can divide the file in that size
+		blockSize = dataLength/countDN
+
+		# now lets create a list that will hold the data of the file divided
+		# representing diferent blocks
+		blocks = []
+
+		# if the blicksize is rounded to 0 then we wont divide the file because this means
+		# the file is too small and we will send it as a whole
+		if blockSize < 1:
+			blocks.append(data)
+		else:
+			# now we can start filling the blocks list with data
+			# I'll use range with 3 attributes.. the first one is start
+			# from that number... the second one is stop in that number
+			# and the third one is count in that interval
+			for i in range(0, dataLength, blockSize):
+				if len(blocks) + 1 == countDN:
+					# in the last iteration we are going to append all as a
+					# data block
+					blocks.append(data[i:])
+				else:
+					blocks.append(data[i:i+blockSize])
+
+		# now that we have the blocks list filled with data we can send the blocks
+		# to the data nodes
+		ctr = 0
+		for node in dataNodes:
+			# we connect to each datanode in the that the metadata server gave us
+			sdn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sdn.connect((i[0], i[1]))
+			# now we build a put packet that we will send to the datanode server
+			packet.BuildPutPacket(fname, dataLength)
+			sdn.sendall(packet.getEncodedPacket())
+
+			#now we wait for the response of the server
+			response = sdn.recv(1024)
+
+			if response = "OK":
+				block = blocks[ctr]
+				
 
 
 	# Notify the metadata server where the blocks are saved.
