@@ -26,7 +26,7 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 			NAK if problem, DUP if the IP and port already registered
 		"""
 		try:
-			if db.AddDataNode(p.getAdrr(), p.getPort()) :
+			if db.AddDataNode(p.getAddr(), p.getPort()) :
 				self.request.sendall("ACK") 
 			else:
 				self.request.sendall("DUP")
@@ -52,7 +52,7 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 		info= p.getFileInfo()
 	
 		if db.InsertFile(info[0], info[1]):
-			Datanodes = db.getDataNodes()
+			Datanodes = db.GetDataNodes()
 			p.BuildPutResponse(Datanodes)
 			self.request.sendall(p.getEncodedPacket()) 
 			

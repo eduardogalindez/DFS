@@ -96,7 +96,7 @@ def copyToDFS(address, fname, path):
 		for node in dataNodes:
 			# we connect to each datanode in the that the metadata server gave us
 			sdn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			sdn.connect((i[0], i[1]))
+			sdn.connect((node[0], node[1]))
 			# now we build a put packet that we will send to the datanode server
 			packet.BuildPutPacket(fname, dataLength)
 			sdn.sendall(packet.getEncodedPacket())
@@ -104,11 +104,11 @@ def copyToDFS(address, fname, path):
 			#now we wait for the response of the server
 			response = sdn.recv(1024)
 
-			if response = "OK":
+			if response == "OK":
 				block = blocks[ctr]
 				blockSize = len(block)
 
-				sdn.sendall(blockSize)
+				sdn.sendall(str(blockSize))
 				response = sdn.recv(1024)
 
 				# we have to send the block in chunks of data because the biffer size
@@ -129,6 +129,7 @@ def copyToDFS(address, fname, path):
 			# here we are waiting for the chunkID
 			response = sdn.recv(1024)
 			node.append(response)
+			ctr+=1
 		sdn.close()
 
 	# Notify the metadata server where the blocks are saved.

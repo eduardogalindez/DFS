@@ -44,6 +44,7 @@ def register(meta_ip, meta_port, data_ip, data_port):
 
 		 	if response == "NAK":
 				print "Registratation ERROR"
+
 			if response == "ACK":
 				print "Registratation perfect"
 
@@ -63,21 +64,23 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		fname, fsize = p.getFileInfo()
 
 		self.request.send("OK")
-		BSize= self.request.recv(1024)
+		BSize= int(self.request.recv(1024))
 		self.request.send("Got data size")
 
 		# Generates an unique block id.
 		blockid = str(uuid.uuid1())
-		DBlock=self.request.recv(1024)
-		self.request.send("Got first chunk")
+
+		DBlock = ""
+		DBlock= self.request.recv(1024)
+		self.request.sendall("Got first chunk")
 		while len(DBlock) < BSize:
-			DBlock= Dblock+self.request.recv(1024)
+			DBlock+= self.request.recv(1024)
 			self.request.send("recieved another chunk")
 
 		# Open the file for the new data block.  
 		# Receive the data block.
 		# Send the block id back
-		NewFile = open(DATA_PATH+blockid, 'w')
+		NewFile = open(DATA_PATH+blockid, 'wb')
 		self.request.sendall(blockid)
 		NewFile.write(DBlock)
 		NewFile.close
@@ -89,7 +92,7 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 
 		# Read the file with the block id data
 		# Send it back to the copy client.
-		IDFile = open(DATA_PATH+blockid, 'r')
+		IDFile = open(DATA_PATH+blockid, 'rb')
 		data= IDFile.read()
 		IDFile.close()
 		datalen = len(data)
