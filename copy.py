@@ -164,8 +164,20 @@ def copyFromDFS(address, fname, path):
 		print "File not found"
 		return
 	else:
-		sdn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sdn.connect((i[0], i[1]))
+		# now we will create a file that will contain the file
+		theFile = open(path, 'w')
+		packet.DecodePacket(response)
+		metaList = packet.getDataNodes()
+		for dataNode in metaList:
+			# we connect to each datanode in the that the metadata server gave us
+			sdn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sdn.connect((dataNode[0], dataNode[1]))
+
+			# now we have to create something to sent to de datanode
+			# so that it knows what i want from it.. so lets build a 
+			# Get Data Block Packet and send the block id that is in the
+			# third position in the dataNode list
+			packet.BuildGetDataBlockPacket(dataNode[2])
 
     	# Save the file
 	
