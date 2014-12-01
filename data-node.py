@@ -67,7 +67,7 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		blockid = str(uuid.uuid1())
 		DBlock=self.request.recv(1024)
 		self.request.send("Got first chunk")
-		while(len(DBlock)<BSize)
+		while len(DBlock) < BSize:
 			DBlock= Dblock+self.request.recv(1024)
 			self.request.send("recieved another chunk")
 
@@ -89,6 +89,8 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		IDFile = open(DATA_PATH+blockid, 'r')
 		data= IDFile.read()
 		IDFile.close()
+		datalen = len(data)
+		self.request.sendall(datalen)
 		self.request.sendall(data)
 		
 

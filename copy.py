@@ -41,7 +41,7 @@ def copyToDFS(address, fname, path):
 	# Create a Put packet with the fname and the length of the data,
 	# and sends it to the metadata server 
 
-	packet = new Packet()
+	packet = Packet()
 	packet.BuildPutPacket(fname, dataLength)
 	s.sendall(packet.getEncodedPacket())
 
@@ -150,12 +150,21 @@ def copyFromDFS(address, fname, path):
 	"""
 
    	# Contact the metadata server to ask for information of fname
-
-	# Fill code
+   	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect(address)
+	packet = Packet()
+	packet.BuildGetPacket(fname)
+	s.sendall(packet.getEncodedPacket())
+	response = s.recv(1024)
+	s.close()
 
 	# If there is no error response Retreive the data blocks
-
-	# Fill code
+	if response == "NFOUND":
+		print "File not found"
+		return
+	else:
+		sdn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sdn.connect((i[0], i[1]))
 
     	# Save the file
 	
