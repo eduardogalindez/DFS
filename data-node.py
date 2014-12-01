@@ -60,16 +60,21 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		fname, fsize = p.getFileInfo()
 
 		self.request.send("OK")
+		BSize= self.request.rcv(1024)
+		self.request.send("Got data size")
 
 		# Generates an unique block id.
 		blockid = str(uuid.uuid1())
-
+		DBlock=self.request.recv(1024)
+		self.request.send("Got first chunk")
+		while(DBlock<BSize)
+			DBlock= Dblock+self.request.recv(1024)
+			self.request.send("recieved another chunk")
 
 		# Open the file for the new data block.  
 		# Receive the data block.
 		# Send the block id back
 		NewFile = open(DATA_PATH+blockid, 'w')
-		DBlock= self.request.recv(1024)
 		self.request.sendall(blockid)
 		NewFile.write(DBlock)
 		NewFile.close
