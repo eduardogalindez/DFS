@@ -111,19 +111,37 @@ def copyToDFS(address, fname, path):
 				sdn.sendall(blockSize)
 				response = sdn.recv(1024)
 
+				# we have to send the block in chunks of data because the biffer size
+				# is 1024 so that is what this while loop is for
 				while len(block):
+					# get a chunk
 					dataChunk = block[0:1024]
+					# send that chunk
 					sdn.sendall(dataChunk)
+					# wait for a response
 					response = sdn.recv(1024)
-
+					# update the condition
 					block = block[1024:]
 
 			else:
 				print "Data node never responded.. maybe it died!"
 
+			# here we are waiting for the chunkID
+			response = sdn.recv(1024)
+			node.append(response)
+		sdn.close()
+
 	# Notify the metadata server where the blocks are saved.
 
-	# Fill code
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect(address)
+
+	# lets create a block packet to send to the metadata server
+	# the dataNodes already have the chunkID
+	packet.BuildDataBlockPacket(fname, dataNodes)
+	#now lets send the packet
+	s.sendall(packet.getEncodedPacket())
+	s.close()
 	
 def copyFromDFS(address, fname, path):
 	""" Contact the metadata server to ask for the file blocks of
