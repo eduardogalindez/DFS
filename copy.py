@@ -106,8 +106,20 @@ def copyToDFS(address, fname, path):
 
 			if response = "OK":
 				block = blocks[ctr]
-				
+				blockSize = len(block)
 
+				sdn.sendall(blockSize)
+				response = sdn.recv(1024)
+
+				while len(block):
+					dataChunk = block[0:1024]
+					sdn.sendall(dataChunk)
+					response = sdn.recv(1024)
+
+					block = block[1024:]
+
+			else:
+				print "Data node never responded.. maybe it died!"
 
 	# Notify the metadata server where the blocks are saved.
 
