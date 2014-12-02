@@ -33,7 +33,7 @@ def copyToDFS(address, fname, path):
 	# here I read the file and store the contents of the file in a variable named data
 	# and store the data length to in a variable called dataLength :D
 
-	theFile = open(path, 'r')
+	theFile = open(path, 'rb')
 	data = theFile.read()
 	theFile.close()
 	dataLength = len(data)
@@ -165,7 +165,7 @@ def copyFromDFS(address, fname, path):
 		return
 	else:
 		# now we will create a file that will contain the file
-		theFile = open(path, 'w')
+		theFile = open(path, 'wb')
 		packet.DecodePacket(response)
 		metaList = packet.getDataNodes()
 		for dataNode in metaList:
@@ -178,10 +178,16 @@ def copyFromDFS(address, fname, path):
 			# Get Data Block Packet and send the block id that is in the
 			# third position in the dataNode list
 			packet.BuildGetDataBlockPacket(dataNode[2])
+			sdn.sendall(packet.getEncodedPacket())
+			blockSize = int(sdn.recv(1024))
+			blockData = ""
+			while len(blockData) < blockSize:
+				blockData+= self.request.recv(1024)
+				self.request.send("recieved another chunk")
 
-    	# Save the file
-	
-	# Fill code
+			sdn.close()
+			theFile.write(blockData)
+		theFile.close()
 
 if __name__ == "__main__":
 #	client("localhost", 8000)
