@@ -181,15 +181,16 @@ def copyFromDFS(address, fname, path):
 			sdn.sendall(packet.getEncodedPacket())
 			blockSize = sdn.recv(1024)
 			blockData = ""
+			sdn.sendall("recieved the size")
 			print blockSize
-			blockData=sdn.recv(1024)
+			blockData = sdn.recv(1024)
 			sdn.sendall("Recieved first chunk")
 			while len(blockData) < int(blockSize):
-				blockData+= sdn.recv(1024)
-				sdn.send("recieved another chunk")
+				blockData += sdn.recv(1024)
+				sdn.sendall("recieved another chunk")
 
-			sdn.close()
 			theFile.write(blockData)
+			sdn.close()
 		theFile.close()
 
 if __name__ == "__main__":

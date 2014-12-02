@@ -93,10 +93,11 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		# Read the file with the block id data
 		# Send it back to the copy client.
 		IDFile = open(DATA_PATH+blockid, 'rb')
-		data= IDFile.read()
+		data = IDFile.read()
 		IDFile.close()
 		datalen = len(data)
 		self.request.sendall(str(datalen))
+		response = self.request.recv(1024)
 		while len(data):
 			# get a chunk
 			dataChunk = data[0:1024]
