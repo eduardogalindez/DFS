@@ -96,8 +96,17 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		data= IDFile.read()
 		IDFile.close()
 		datalen = len(data)
-		self.request.sendall(datalen)
-		self.request.sendall(data)
+		self.request.sendall(str(datalen))
+		while len(data):
+			# get a chunk
+			dataChunk = data[0:1024]
+			# send that chunk
+			sdn.sendall(dataChunk)
+			# wait for a response
+			response = sdn.recv(1024)
+			# update the condition
+			data = block[1024:]
+		print"Sent all data blocks"
 		
 
 	def handle(self):
