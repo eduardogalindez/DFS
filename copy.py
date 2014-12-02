@@ -179,11 +179,14 @@ def copyFromDFS(address, fname, path):
 			# third position in the dataNode list
 			packet.BuildGetDataBlockPacket(dataNode[2])
 			sdn.sendall(packet.getEncodedPacket())
-			blockSize = int(sdn.recv(1024))
+			blockSize = sdn.recv(1024)
 			blockData = ""
-			while len(blockData) < blockSize:
-				blockData+= self.request.recv(1024)
-				self.request.send("recieved another chunk")
+			print blockSize
+			blockData=sdn.recv(1024)
+			sdn.sendall("Recieved first chunk")
+			while len(blockData) < int(blockSize):
+				blockData+= sdn.recv(1024)
+				sdn.send("recieved another chunk")
 
 			sdn.close()
 			theFile.write(blockData)

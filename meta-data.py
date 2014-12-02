@@ -67,7 +67,7 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 		# Fill code to get the file name from packet and then 
 		# get the fsize and array of metadata server
 		fName = p.getFileName()
-		fsize, MetaList= db.getFileInode(fName)
+		fsize, MetaList= db.GetFileInode(fName)
 		if fsize:
 			p.BuildGetResponse(MetaList, fsize)
 			self.request.sendall(p.getEncodedPacket())

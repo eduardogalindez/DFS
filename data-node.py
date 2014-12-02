@@ -101,11 +101,11 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 			# get a chunk
 			dataChunk = data[0:1024]
 			# send that chunk
-			sdn.sendall(dataChunk)
+			self.request.sendall(dataChunk)
 			# wait for a response
-			response = sdn.recv(1024)
+			response = self.request.recv(1024)
 			# update the condition
-			data = block[1024:]
+			data = data[1024:]
 		print"Sent all data blocks"
 		
 
