@@ -61,6 +61,7 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		   copy client.
 		"""
 
+		# get the information of the file that is given in the packet
 		fname, fsize = p.getFileInfo()
 
 		self.request.send("OK")
@@ -70,9 +71,11 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		# Generates an unique block id.
 		blockid = str(uuid.uuid1())
 
+		# here we start constructing the datablock to store it
 		DBlock = ""
 		DBlock= self.request.recv(1024)
 		self.request.sendall("Got first chunk")
+		# we will get the data in chunks because the buffer size is 1024
 		while len(DBlock) < BSize:
 			DBlock+= self.request.recv(1024)
 			self.request.send("recieved another chunk")
@@ -97,6 +100,8 @@ class DataNodeTCPHandler(SocketServer.BaseRequestHandler):
 		IDFile.close()
 		datalen = len(data)
 		self.request.sendall(str(datalen))
+		# this response is importat because it will make the datanode
+		# to stop and wait for a respose and not go crazy sending data chunks
 		response = self.request.recv(1024)
 		while len(data):
 			# get a chunk
