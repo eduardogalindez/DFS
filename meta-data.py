@@ -36,7 +36,9 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 	def handle_list(self, db):
 		"""Get the file list from the database and send list to client"""
 		try:
+			# list will contain the names and sizes of all the files
 			List = db.GetFiles()
+			# now create a build list packet and send it to the client
 			packet = Packet()
 			packet.BuildListResponse(List)
 			self.request.sendall(packet.getEncodedPacket())
@@ -48,9 +50,12 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 		"""Insert new file into the database and send data nodes to save
 		   the file.
 		"""
-	       
-		info= p.getFileInfo()
+
+		# get the information of the file from the packet
+		info = p.getFileInfo()
 	
+		# if the inser files works then its al a success and
+		# we have to send a list of the datanodes to the client
 		if db.InsertFile(info[0], info[1]):
 			Datanodes = db.GetDataNodes()
 			p.BuildPutResponse(Datanodes)
@@ -66,9 +71,14 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 
 		# Fill code to get the file name from packet and then 
 		# get the fsize and array of metadata server
+		# get the name from the packet
 		fName = p.getFileName()
+		# now we have to find the file size and the datanodes
+		# in which we stored the blocks
 		fsize, MetaList= db.GetFileInode(fName)
 		if fsize:
+			# if the size is not empty... so if the file exists then
+			# we send the size and the datanodes to the client
 			p.BuildGetResponse(MetaList, fsize)
 			self.request.sendall(p.getEncodedPacket())
 		else:
@@ -79,9 +89,10 @@ class MetadataTCPHandler(SocketServer.BaseRequestHandler):
 
 		# Fill code to get file name and blocks from
 		# packet
+		# get some the information out of the packet
 		fName = p.getFileName()
 		DBlocks= p.getDataBlocks()
-		# Fill code to add blocks to file inode
+		# now add blocks to file inode
 		db.AddBlockToInode(fName, DBlocks)
 		
 	def handle(self):
